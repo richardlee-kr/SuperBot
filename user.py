@@ -13,7 +13,6 @@ ws = wb.active
 def loadFile():
     wb = load_workbook("userDB.xlsx")
     ws = wb.active
-
 def saveFile():
     wb.save("userDB.xlsx")
     wb.close()
@@ -29,11 +28,20 @@ def checkUserNum():
         else:
             count = count
     return count
+def checkRow():
+    loadFile()
+    print("첫번쨰 빈 곳을 탐색")
+    for row in range(2, ws.max_row + 1):
+        if ws.cell(row,1).value is None:
+            return row
+            break
+    _result = ws.max_row+1
+    saveFile()
 
-#def checkUser(_name, _id):
-    
+    return _result
 
 def findRow(_name, _id):
+    print(_name,"<",_id,">의 존재 여부 확인")
     loadFile()
 
     print("등록된 유저수: ", checkUserNum())
@@ -41,18 +49,19 @@ def findRow(_name, _id):
 
     print("이름과 고유번호 탐색")
     for row in range(2, ws.max_row+2):
-        print(row, "번째 줄 name: ", ws.cell(row,c_name).value)
-        print("입력된 name: ", _name)
-        print("이름과 일치 여부: ", ws.cell(row, c_name).value == _name)
+        #print(row, "번째 줄 name: ", ws.cell(row,c_name).value)
+        #print("입력된 name: ", _name)
+        #print("이름과 일치 여부: ", ws.cell(row, c_name).value == _name)
 
-        print(row,"번째 줄 id: ", ws.cell(row,c_id).value)
-        print("입력된 id: ", hex(_id))
-        print("고유번호정보와 일치 여부: ", ws.cell(row, c_id).value == hex(_id))
-        print("")
+        #print(row,"번째 줄 id: ", ws.cell(row,c_id).value)
+        #print("입력된 id: ", hex(_id))
+        #print("고유번호정보와 일치 여부: ", ws.cell(row, c_id).value == hex(_id))
+        #print("")
 
         if ws.cell(row, c_name).value == _name and ws.cell(row,c_id).value == hex(_id):
             print("등록된  이름과 고유번호를 발견")
             print("등록된  값의 위치: ",  row, "번째 줄")
+            print("")
 
             saveFile()
 
@@ -83,17 +92,7 @@ def getMoney(_name, _id):
 
         return 0
         
-def checkRow():
-    loadFile()
-    print("첫번쨰 빈 곳을 탐색")
-    for row in range(2, ws.max_row + 1):
-        if ws.cell(row,1).value is None:
-            return row
-            break
-    _result = ws.max_row+1
-    saveFile()
-
-    return _result
+#======================================================================================
 
 def signup(_name, _id):
     loadFile()
@@ -126,6 +125,29 @@ def userInfo(_name, _id):
     else:
         #사용자 정보 없음
         return None, None
+
+    saveFile()
+
+def remit(sender, s_id, receiver, r_id, _amount):
+    loadFile()
+    
+    print("지정된 유저의 보유 자산 탐색")
+    print("보내는 사람: ", sender)
+    print("받는 사람: ", receiver)
+    print("보내는 돈: ", _amount)
+
+    receiver_row = findRow(receiver, r_id)
+    sender_row = findRow(sender, s_id)
+
+    print(receiver, "의 자산:" + str(ws.cell(receiver_row, c_money).value))
+    print(sender, "의 자산:" + str(ws.cell(sender_row, c_money).value))
+    
+    ws.cell(receiver_row, c_money).value += int(_amount)
+    ws.cell(sender_row, c_money).value -= int(_amount)
+
+    print("자산 데이터 수정 완료")
+    print(receiver, "의 자산: ", ws.cell(receiver_row, c_money).value)
+    print(sender, "의 자산: ", ws.cell(sender_row, c_money).value)
 
     saveFile()
 

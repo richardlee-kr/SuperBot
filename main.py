@@ -90,7 +90,7 @@ async def reset(ctx):
 
 @bot.command()
 async def 송금(ctx, user: discord.User, money):
-    print("송금을 시작합니다")
+    print("receiver가 존재하는지 확인합니다")
     if findRow(user.name, user.id) == None:
         print("지정된 유저는 DB에 존재하지 않습니다.")
         print("------------------------------\n")
@@ -98,14 +98,26 @@ async def 송금(ctx, user: discord.User, money):
     else:
         print("지정된 유저를 DB에서 발견했습니다.")
         print("송금하려는 돈: ", money)
-        _money = getMoney(ctx.author.name, ctx.author.id)
-        print(ctx.author.name + "의 돈: ", _money)
-        if _money >= int(money):
+
+        s_money = getMoney(ctx.author.name, ctx.author.id)
+        r_money = getMoney(user.name, user.id)
+
+        if s_money >= int(money):
             print("돈이 충분하므로 송금을 진행합니다.")
-            await ctx.send("송금")
+
+            remit(ctx.author.name, ctx.author.id, user.name, user.id, money)
+            print("송금이 완료되었습니다. 결과를 전송합니다.")
+
+            embed = discord.Embed(title="송금 완료", description = "송금된 돈: " + money, color = 0x77ff00)
+            embed.add_field(name = "보낸 사람: " + ctx.author.name, value = "현재 자산: " + str(getMoney(ctx.author.name, ctx.author.id)))
+            embed.add_field(name = ":arrow_forward:", value = "")
+            embed.add_field(name="받은 사람: " + user.name, value="현재 자산: " + str(getMoney(user.name, user.id)))
+                    
+            await ctx.send(embed=embed)
         else:
             print("돈이 충분하지 않습니다.")
             await ctx.send("돈이 충분하지 않습니다.")
+
         print("------------------------------\n")
 
 @bot.event
