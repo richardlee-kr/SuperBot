@@ -1,5 +1,4 @@
 from openpyxl import load_workbook, Workbook
-import numpy as np
 
 c_name = 1
 c_id = 2
@@ -15,10 +14,29 @@ def loadFile():
     wb = load_workbook("userDB.xlsx")
     ws = wb.active
 
-def checkName(_name, _id):
+def saveFile():
+    wb.save("userDB.xlsx")
+    wb.close()
+
+def checkUserNum():
     loadFile()
 
-    print("등록된 유저수: ", ws.max_row-1)
+    count = 0
+
+    for row in range(2, ws.max_row+1):
+        if ws.cell(row,c_name).value != None:
+            count = count+1
+        else:
+            count = count
+    return count
+
+#def checkUser(_name, _id):
+    
+
+def findRow(_name, _id):
+    loadFile()
+
+    print("등록된 유저수: ", checkUserNum())
     print("")
 
     print("이름과 고유번호 탐색")
@@ -36,79 +54,46 @@ def checkName(_name, _id):
             print("등록된  이름과 고유번호를 발견")
             print("등록된  값의 위치: ",  row, "번째 줄")
 
-            wb.save("userDB.xlsx")
-            wb.close()
+            saveFile()
 
-            return False
+            return row
             break
         else:
             print("등록된 정보를 탐색 실패, 재탐색 실시")
 
-    wb.save("userDB.xlsx")
-    wb.close()
+    saveFile()
 
-    return True
-
-#def checkMoney(_name, _id, _money):
-#    loadFile()
-#
-#    print("충분한 돈이 있는지 탐색")
-#    print("송금하려는 돈: ",_money)
-#    for row in range(2,ws.max_row+2):
-#        if ws.cell(row,c_name).value == _name and ws.cell(row,c_id).value == _id:
-#            print(_named,"의 보유 자산: ", ws.cell(row,c_money).value)
-#            if ws.cell(row,c_money).value >= _money:
-#                print("충분한 돈을 확인")
-#                return True
-#                break
-#            else:
-#                print("충분하지 않는 돈을 확인")
-#                return False
-#                break
+    return None
 
 def getMoney(_name, _id):
     loadFile()
 
     print("유저의 돈을 탐색중")
 
-    for row in range(2,ws.max_row+2):
-        print(row, "번째 줄 name: ", ws.cell(row,c_name).value)
-        print("입력된 name: ", _name)
-        print("이름과 일치 여부: ", ws.cell(row, c_name).value == _name)
+    userRow = findRow(_name, _id)
+    if not userRow == None:
+        print(_name,"의 보유 자산: ", ws.cell(userRow,c_money).value)
+        result = ws.cell(userRow, c_money).value
 
-        print(row,"번째 줄 id: ", ws.cell(row,c_id).value)
-        print("입력된 id: ", hex(_id))
-        print("고유번호정보와 일치 여부: ", ws.cell(row, c_id).value == hex(_id))
-        print("")
+        saveFile()
 
-        if ws.cell(row, c_name).value == _name and ws.cell(row,c_id).value == hex(_id):
-            print(_name,"의 보유 자산: ", ws.cell(row,c_money).value)
-            result = ws.cell(row,c_money).value
+        return result
+    else:
+        saveFile()
 
-            wb.save("userDB.xlsx")
-            wb.close()
-
-            return result
-            break
-        else:
-            print("재탐색")
-
-    wb.save("userDB.xlsx")
-    wb.close()
-
-    return 0
-
+        return 0
+        
 def checkRow():
     loadFile()
     print("첫번쨰 빈 곳을 탐색")
-    #for row in range(2, ws.max_row + 1):
-    #    if ws.cell(row,1).value is None:
-    #        return row
-    #        break
-    return ws.max_row+1
+    for row in range(2, ws.max_row + 1):
+        if ws.cell(row,1).value is None:
+            return row
+            break
+    _result = ws.max_row+1
+    saveFile()
 
-    wb.save("userDB.xlsx")
-    wb.close()
+    return _result
 
 def signup(_name, _id):
     loadFile()
@@ -125,37 +110,32 @@ def signup(_name, _id):
     ws.cell(row=_row, column=c_lvl, value = 1)
     print("초기 레벨 설정 | lvl:", ws.cell(_row,c_lvl).value)
 
-    wb.save("userDB.xlsx")
-    wb.close()
+    saveFile()
 
     print("데이터 추가 완료")
 
 def userInfo(_name, _id):
     loadFile()
-    if not checkName(_name, _id):
+
+    userRow = findRow(_name, _id)
+
+    if not userRow == None:
         print("사용자 정보 발견, 보유 자산과 레벨을 반환")
-        for row in range(2, ws.max_row+2):
-            if ws.cell(row,c_name).value == _name and ws.cell(row, c_id).value == hex(_id):
-                print("보유자산: ", ws.cell(row,c_money).value, "레벨: ", ws.cell(row,c_lvl).value)
-                return ws.cell(row,c_money).value, ws.cell(row,c_lvl).value
-                break
+        print("보유자산: ", ws.cell(userRow,c_money).value, "레벨: ", ws.cell(userRow,c_lvl).value)
+        return ws.cell(userRow,c_money).value, ws.cell(userRow,c_lvl).value
     else:
         #사용자 정보 없음
         return None, None
 
-    wb.save("userDB.xlsx")
-    wb.close()
+    saveFile()
 
 def delete():
     loadFile()
+
     print("유저 데이터를 삭제")
 
     ws.delete_rows(2,ws.max_row)
-    #for row in ws['A2:D20']:
-    #    for cell in row:
-    #        cell.value = None
-    wb.save("userDB.xlsx")
-    wb.close()
+    saveFile()
 
     print("데이터 삭제 완료")
 

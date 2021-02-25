@@ -40,7 +40,8 @@ async def 주사위(ctx):
 async def 회원가입(ctx):
     #print(ctx.author.name)
     #print(ctx.author.id)
-    if checkName(ctx.author.name, ctx.author.id):
+    print("회원가입이 가능한지 확인합니다.")
+    if findRow(ctx.author.name, ctx.author.id) == None:
         print("DB에 중복된 값이 없으므로 회원가입을 진행합니다")
         signup(ctx.author.name, ctx.author.id)
         print("회원가입이 완료되었습니다.")
@@ -89,7 +90,8 @@ async def reset(ctx):
 
 @bot.command()
 async def 송금(ctx, user: discord.User, money):
-    if checkName(user.name, user.id):
+    print("송금을 시작합니다")
+    if findRow(user.name, user.id) == None:
         print("지정된 유저는 DB에 존재하지 않습니다.")
         print("------------------------------\n")
         await ctx.send("등록되지 않는 사용자입니다.")
