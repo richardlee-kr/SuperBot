@@ -125,5 +125,5 @@ async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound):
         await ctx.send("명령어를 찾지 못했습니다")
 
-bot.run("Nzk0NDMzMTgzNjYzMTI4NjE2.X-6vjg.9DYyNiPCRiV-ssYKBpShWJxIzCE")
+bot.run("your token here")
 
