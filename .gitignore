@@ -1,6 +1,9 @@
 #custom file ignorance
 *.xlsx
-*.token
+.token
+
+#cutsom folder ignorance
+test/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
