@@ -5,6 +5,8 @@ from user import *
 from discord.ext import commands
 
 bot = commands.Bot(command_prefix="!")
+token = open(".token", "r").readline()
+
 
 @bot.event
 async def on_ready():
@@ -143,5 +145,5 @@ async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound):
         await ctx.send("명령어를 찾지 못했습니다")
 
-bot.run()
+bot.run(token)
 
