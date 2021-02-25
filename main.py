@@ -5,7 +5,7 @@ from user import *
 from discord.ext import commands
 
 bot = commands.Bot(command_prefix="!")
-token = open("token", "r").readline()
+token = open(".token", "r").readline()
 
 
 @bot.event
@@ -43,45 +43,48 @@ async def 회원가입(ctx):
     #print(ctx.author.name)
     #print(ctx.author.id)
     print("회원가입이 가능한지 확인합니다.")
-    if findRow(ctx.author.name, ctx.author.id) == None:
+    userExistance, userRow = checkUser(ctx.author.name, ctx.author.id)
+    if userExistance:
+        print("DB에서 ", ctx.author.name, "을 찾았습니다.")
+        print("------------------------------\n")
+        await ctx.send("이미 가입하셨습니다.")
+    else:
         print("DB에서 ", ctx.author.name, "을 찾을 수 없습니다")
         print("")
 
-        signup(ctx.author.name, ctx.author.id)
+        Signup(ctx.author.name, ctx.author.id)
 
         print("회원가입이 완료되었습니다.")
         print("------------------------------\n")
         await ctx.send("회원가입이 완료되었습니다.")
-    else:
-        print("DB에서 ", ctx.author.name, "을 찾았습니다.")
-        print("------------------------------\n")
-        await ctx.send("이미 가입하셨습니다.")
 
 @bot.command()
 async def 탈퇴(ctx):
     print("탈퇴가 가능한지 확인합니다.")
-    if findRow(ctx.author.name, ctx.author.id) == None:
+    userExistance, userRow = checkUser(ctx.author.name, ctx.author.id)
+    if userExistance:
+        DeleteAccount(userRow)
+        print("탈퇴가 완료되었습니다.")
+        print("------------------------------\n")
+
+        await ctx.send("탈퇴가 완료되었습니다.")
+    else:
         print("DB에서 ", ctx.author.name, "을 찾을 수 없습니다")
         print("------------------------------\n")
 
         await ctx.send("등록되지 않은 사용자입니다.")
-    else:
-        print("DB에서 ", ctx.author.name, "을 찾았습니다.")
-        delete(ctx.author.name, ctx.author.id)
-
-        await ctx.send("탈퇴가 완료되었습니다.")
         
 
 @bot.command()
 async def 내정보(ctx):
-    money, level = userInfo(ctx.author.name, ctx.author.id)
-    
-    if money == None or level == None:
+    userExistance, userRow = checkUser(ctx.author.name, ctx.author.id)
+
+    if not userExistance:
         print("DB에서 ", ctx.author.name, "을 찾을 수 없습니다")
         print("------------------------------\n")
-        await ctx.send("등록되지 않은 사용자입니다.")
+        await ctx.send("회원가입 후 자신의 정보를 확인할 수 있습니다.")
     else:
-        print("DB에서 ", ctx.author.name, "을 찾았습니다.")
+        money, level = userInfo(userRow)
         print("------------------------------\n")
         embed = discord.Embed(title="유저 정보", description = ctx.author.name, color = 0x62D0F6)
         embed.add_field(name = "레벨", value = level)
@@ -90,14 +93,14 @@ async def 내정보(ctx):
 
 @bot.command()
 async def 정보(ctx, user: discord.User):
-    money, level = userInfo(user.name, user.id)
+    userExistance, userRow = checkUser(user.name, user.id)
 
-    if money == None or level == None:
-        print("DB에서 ", ctx.author.name, "을 찾을 수 없습니다")
+    if not userExistance:
+        print("DB에서 ", user.name, "을 찾을 수 없습니다")
         print("------------------------------\n")
-        await ctx.send("등록되지 않은 사용자입니다.")
+        await ctx.send(user.name  + " 은(는) 등록되지 않은 사용자입니다.")
     else:
-        print("DB에서 ", ctx.author.name, "을 찾았습니다.")
+        money, level = userInfo(userRow)
         print("------------------------------\n")
         embed = discord.Embed(title="유저 정보", description = user.name, color = 0x62D0F6)
         embed.add_field(name = "레벨", value = level)
@@ -106,32 +109,45 @@ async def 정보(ctx, user: discord.User):
 
 @bot.command()
 async def 송금(ctx, user: discord.User, money):
-    if findRow(user.name, user.id) == None:
+    print("송금이 가능한지 확인합니다.")
+    senderExistance, senderRow = checkUser(ctx.author.name, ctx.author.id)
+    receiverExistance, receiverRow = checkUser(user.name, user.id)
+
+    if not senderExistance:
+        print("DB에서", ctx.author.name, "을 찾을수 없습니다")
+        print("------------------------------\n")
+        await ctx.send("회원가입 후 송금이 가능합니다.")
+    elif not receiverExistance:
         print("DB에서 ", user.name, "을 찾을 수 없습니다")
         print("------------------------------\n")
-        await ctx.send("등록되지 않는 사용자입니다.")
+        await ctx.send(user.name  + " 은(는) 등록되지 않은 사용자입니다.")
     else:
-        print("DB에서 ", user.name, "을 찾았습니다.")
         print("송금하려는 돈: ", money)
 
-        s_money = getMoney(ctx.author.name, ctx.author.id)
-        r_money = getMoney(user.name, user.id)
+        s_money = getMoney(ctx.author.name, senderRow)
+        r_money = getMoney(user.name, receiverRow)
 
-        if s_money >= int(money):
+        if s_money >= int(money) and int(money) != 0:
             print("돈이 충분하므로 송금을 진행합니다.")
+            print("")
 
-            remit(ctx.author.name, ctx.author.id, user.name, user.id, money)
+            remit(ctx.author.name, senderRow, user.name, receiverRow, money)
+
             print("송금이 완료되었습니다. 결과를 전송합니다.")
 
             embed = discord.Embed(title="송금 완료", description = "송금된 돈: " + money, color = 0x77ff00)
-            embed.add_field(name = "보낸 사람: " + ctx.author.name, value = "현재 자산: " + str(getMoney(ctx.author.name, ctx.author.id)))
+            embed.add_field(name = "보낸 사람: " + ctx.author.name, value = "현재 자산: " + str(getMoney(ctx.author.name, senderRow)))
             embed.add_field(name = "→", value = ":moneybag:")
-            embed.add_field(name="받은 사람: " + user.name, value="현재 자산: " + str(getMoney(user.name, user.id)))
+            embed.add_field(name="받은 사람: " + user.name, value="현재 자산: " + str(getMoney(user.name, receiverRow)))
                     
             await ctx.send(embed=embed)
+        elif int(money) == 0:
+            await ctx.send("0원을 보낼 필요는 없죠")
         else:
             print("돈이 충분하지 않습니다.")
-            await ctx.send("돈이 충분하지 않습니다.")
+            print("송금하려는 돈: ", money)
+            print("현재 자산: ", s_money)
+            await ctx.send("돈이 충분하지 않습니다. 현재 자산: " + str(s_money))
 
         print("------------------------------\n")
 
@@ -143,7 +159,7 @@ async def reset(ctx):
 @bot.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound):
-        await ctx.send("명령어를 찾지 못했습니다")
+        await ctx.send("명령어를 찾지 못했습니다. !도움을 입력하여 명령어를 확인하세요.")
 
 bot.run(token)
 
