@@ -1,6 +1,6 @@
 #custom file ignorance
 *.xlsx
-.token
+token
 
 #cutsom folder ignorance
 test/
