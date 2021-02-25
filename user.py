@@ -30,24 +30,32 @@ def checkUserNum():
     return count
 def checkRow():
     loadFile()
-    print("첫번쨰 빈 곳을 탐색")
+
+    print("첫번째 빈 곳을 탐색")
+
     for row in range(2, ws.max_row + 1):
         if ws.cell(row,1).value is None:
             return row
             break
+
     _result = ws.max_row+1
+
     saveFile()
 
     return _result
 
 def findRow(_name, _id):
+    print("user.py - findRow")
     print(_name,"<",_id,">의 존재 여부 확인")
+    print("")
+
     loadFile()
 
     print("등록된 유저수: ", checkUserNum())
-    print("")
 
     print("이름과 고유번호 탐색")
+    print("")
+
     for row in range(2, ws.max_row+2):
         #print(row, "번째 줄 name: ", ws.cell(row,c_name).value)
         #print("입력된 name: ", _name)
@@ -80,6 +88,7 @@ def getMoney(_name, _id):
     print("유저의 돈을 탐색중")
 
     userRow = findRow(_name, _id)
+
     if not userRow == None:
         print(_name,"의 보유 자산: ", ws.cell(userRow,c_money).value)
         result = ws.cell(userRow, c_money).value
@@ -95,11 +104,15 @@ def getMoney(_name, _id):
 #======================================================================================
 
 def signup(_name, _id):
+    print("user.py - signup")
+
     loadFile()
-    print("첫번째 빈곳: ", checkRow())
+
     _row = checkRow()
+    print("첫번째 빈곳: ", _row)
 
     print("데이터 추가 시작")
+
     ws.cell(row=_row, column=c_name, value=_name)
     print("이름 추가 | ",  ws.cell(_row,c_name).value)
     ws.cell(row=_row, column=c_id, value =hex(_id))
@@ -108,6 +121,7 @@ def signup(_name, _id):
     print("기본 자금 지급 | ", ws.cell(_row,c_money).value)
     ws.cell(row=_row, column=c_lvl, value = 1)
     print("초기 레벨 설정 | lvl:", ws.cell(_row,c_lvl).value)
+    print("")
 
     saveFile()
 

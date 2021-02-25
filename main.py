@@ -10,7 +10,7 @@ token = open("token", "r").readline()
 
 @bot.event
 async def on_ready():
-    print("I have logged in as {0.user}".format(bot))
+    print("I have logged in as {0.user}\n".format(bot))
 
 @bot.command()
 async def 안녕(ctx):
@@ -45,6 +45,7 @@ async def 회원가입(ctx):
     print("회원가입이 가능한지 확인합니다.")
     if findRow(ctx.author.name, ctx.author.id) == None:
         print("DB에서 ", ctx.author.name, "을 찾을 수 없습니다")
+        print("")
 
         signup(ctx.author.name, ctx.author.id)
 
@@ -60,7 +61,7 @@ async def 회원가입(ctx):
 async def 탈퇴(ctx):
     print("탈퇴가 가능한지 확인합니다.")
     if findRow(ctx.author.name, ctx.author.id) == None:
-        print("DB에서 ", ctx.author.anme, "을 찾을 수 없습니다")
+        print("DB에서 ", ctx.author.name, "을 찾을 수 없습니다")
         print("------------------------------\n")
 
         await ctx.send("등록되지 않은 사용자입니다.")
@@ -76,11 +77,11 @@ async def 내정보(ctx):
     money, level = userInfo(ctx.author.name, ctx.author.id)
     
     if money == None or level == None:
-        print("사용자 정보가 없습니다.")
+        print("DB에서 ", ctx.author.name, "을 찾을 수 없습니다")
         print("------------------------------\n")
         await ctx.send("등록되지 않은 사용자입니다.")
     else:
-        print("사용자 정보 발견, 메세지를 보냅니다.")
+        print("DB에서 ", ctx.author.name, "을 찾았습니다.")
         print("------------------------------\n")
         embed = discord.Embed(title="유저 정보", description = ctx.author.name, color = 0x62D0F6)
         embed.add_field(name = "레벨", value = level)
@@ -92,11 +93,11 @@ async def 정보(ctx, user: discord.User):
     money, level = userInfo(user.name, user.id)
 
     if money == None or level == None:
-        print("사용자 정보가 없습니다.")
+        print("DB에서 ", ctx.author.name, "을 찾을 수 없습니다")
         print("------------------------------\n")
         await ctx.send("등록되지 않은 사용자입니다.")
     else:
-        print("사용자 정보 발견, 메세지를 보냅니다.")
+        print("DB에서 ", ctx.author.name, "을 찾았습니다.")
         print("------------------------------\n")
         embed = discord.Embed(title="유저 정보", description = user.name, color = 0x62D0F6)
         embed.add_field(name = "레벨", value = level)
@@ -105,13 +106,12 @@ async def 정보(ctx, user: discord.User):
 
 @bot.command()
 async def 송금(ctx, user: discord.User, money):
-    print("receiver가 존재하는지 확인합니다")
     if findRow(user.name, user.id) == None:
-        print("지정된 유저는 DB에 존재하지 않습니다.")
+        print("DB에서 ", user.name, "을 찾을 수 없습니다")
         print("------------------------------\n")
         await ctx.send("등록되지 않는 사용자입니다.")
     else:
-        print("지정된 유저를 DB에서 발견했습니다.")
+        print("DB에서 ", user.name, "을 찾았습니다.")
         print("송금하려는 돈: ", money)
 
         s_money = getMoney(ctx.author.name, ctx.author.id)
