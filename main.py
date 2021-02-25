@@ -110,7 +110,7 @@ async def 송금(ctx, user: discord.User, money):
 
             embed = discord.Embed(title="송금 완료", description = "송금된 돈: " + money, color = 0x77ff00)
             embed.add_field(name = "보낸 사람: " + ctx.author.name, value = "현재 자산: " + str(getMoney(ctx.author.name, ctx.author.id)))
-            embed.add_field(name = ":arrow_forward:", value = "")
+            embed.add_field(name = "→", value = ":moneybag:")
             embed.add_field(name="받은 사람: " + user.name, value="현재 자산: " + str(getMoney(user.name, user.id)))
                     
             await ctx.send(embed=embed)
@@ -125,5 +125,5 @@ async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound):
         await ctx.send("명령어를 찾지 못했습니다")
 
-bot.run("your token here")
+bot.run("Nzk0NDMzMTgzNjYzMTI4NjE2.X-6vjg.9DYyNiPCRiV-ssYKBpShWJxIzCE")
 
