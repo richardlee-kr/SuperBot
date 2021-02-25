@@ -1,6 +1,6 @@
 #custom file ignorance
 *.xlsx
-*.token
+token.txt
 z_main.py
 
 #cutsom folder ignorance
