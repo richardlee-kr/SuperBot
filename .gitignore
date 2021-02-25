@@ -1,6 +1,7 @@
 #custom file ignorance
 *.xlsx
 token
+z_main.py
 
 #cutsom folder ignorance
 test/
