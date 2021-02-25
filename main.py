@@ -42,15 +42,32 @@ async def 회원가입(ctx):
     #print(ctx.author.id)
     print("회원가입이 가능한지 확인합니다.")
     if findRow(ctx.author.name, ctx.author.id) == None:
-        print("DB에 중복된 값이 없으므로 회원가입을 진행합니다")
+        print("DB에서 ", ctx.author.name, "을 찾을 수 없습니다")
+
         signup(ctx.author.name, ctx.author.id)
+
         print("회원가입이 완료되었습니다.")
         print("------------------------------\n")
         await ctx.send("회원가입이 완료되었습니다.")
     else:
-        print("DB에서 중복된 값이 발견되었습니다.\n")
+        print("DB에서 ", ctx.author.name, "을 찾았습니다.")
         print("------------------------------\n")
         await ctx.send("이미 가입하셨습니다.")
+
+@bot.command()
+async def 탈퇴(ctx):
+    print("탈퇴가 가능한지 확인합니다.")
+    if findRow(ctx.author.name, ctx.author.id) == None:
+        print("DB에서 ", ctx.author.anme, "을 찾을 수 없습니다")
+        print("------------------------------\n")
+
+        await ctx.send("등록되지 않은 사용자입니다.")
+    else:
+        print("DB에서 ", ctx.author.name, "을 찾았습니다.")
+        delete(ctx.author.name, ctx.author.id)
+
+        await ctx.send("탈퇴가 완료되었습니다.")
+        
 
 @bot.command()
 async def 내정보(ctx):
@@ -85,10 +102,6 @@ async def 정보(ctx, user: discord.User):
         await ctx.send(embed=embed)
 
 @bot.command()
-async def reset(ctx):
-    delete()
-
-@bot.command()
 async def 송금(ctx, user: discord.User, money):
     print("receiver가 존재하는지 확인합니다")
     if findRow(user.name, user.id) == None:
@@ -120,10 +133,15 @@ async def 송금(ctx, user: discord.User, money):
 
         print("------------------------------\n")
 
+
+@bot.command()
+async def reset(ctx):
+    _reset()
+
 @bot.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound):
         await ctx.send("명령어를 찾지 못했습니다")
 
-bot.run("your token here")
+bot.run()
 

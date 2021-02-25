@@ -113,6 +113,18 @@ def signup(_name, _id):
 
     print("데이터 추가 완료")
 
+def delete(_name, _id):
+    loadFile()
+    print("회원탈퇴 진행")
+
+    userRow = findRow(_name, _id)
+
+    ws.delete_rows(userRow)
+
+    saveFile()
+    
+    print("회원탈퇴 완료")
+
 def userInfo(_name, _id):
     loadFile()
 
@@ -151,7 +163,7 @@ def remit(sender, s_id, receiver, r_id, _amount):
 
     saveFile()
 
-def delete():
+def _reset():
     loadFile()
 
     print("유저 데이터를 삭제")
