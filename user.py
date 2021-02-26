@@ -87,24 +87,6 @@ def checkUser(_name, _id):
 
     return False, None
 
-def getRow(_name, _id):
-    print("user.py - getRow")
-    print(_name,"의 위치 탐색")
-
-    loadFile()
-
-    userExistance, userRow = checkUser(_name, _id)
-    if userExistance:
-        saveFile()
-
-        return userRow 
-    else:
-        print(_name, "을 찾을 수 없음")
-
-        saveFile()
-
-        return None
-
 def getMoney(_name,_row):
     print("user.py - getMoney")
     loadFile()
