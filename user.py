@@ -150,25 +150,42 @@ def userInfo(_row):
 
 def remit(sender, sender_row, receiver, receiver_row, _amount):
     print("user.py - remit")
-    loadFile()
+    #loadFile()
     
     print("보내는 사람: ", sender)
     print("받는 사람: ", receiver)
     print("보내는 돈: ", _amount)
     print("")
 
-    print(receiver, "의 자산:" + str(ws.cell(receiver_row, c_money).value))
-    print(sender, "의 자산:" + str(ws.cell(sender_row, c_money).value))
-    print("")
+    modifyMoney(receiver, receiver_row, _amount)
+    modifyMoney(sender, sender_row, -int(_amount))
+
+    #print(receiver, "의 자산:" + str(ws.cell(receiver_row, c_money).value))
+    #print(sender, "의 자산:" + str(ws.cell(sender_row, c_money).value))
+    #print("")
     
-    ws.cell(receiver_row, c_money).value += int(_amount)
-    ws.cell(sender_row, c_money).value -= int(_amount)
+    #ws.cell(receiver_row, c_money).value += int(_amount)
+    #ws.cell(sender_row, c_money).value -= int(_amount)
 
-    print("자산 데이터 수정 완료")
-    print(receiver, "의 자산: ", ws.cell(receiver_row, c_money).value)
-    print(sender, "의 자산: ", ws.cell(sender_row, c_money).value)
-    print("")
+    #print("자산 데이터 수정 완료")
+    #print(receiver, "의 자산: ", ws.cell(receiver_row, c_money).value)
+    #print(sender, "의 자산: ", ws.cell(sender_row, c_money).value)
+    #print("")
 
+    #saveFile()
+
+def modifyMoney(_target, _row, _amount):
+    print("user.py - modifyMoney")
+    loadFile()
+
+    print(_target, "의 자산데이터 수정")
+    print(_target, "의 자산:" + str(ws.cell(_row, c_money).value))
+    print("추가할 액수: ", _amount)
+    ws.cell(_row, c_money).value += int(_amount)
+
+    print("자산데이터 수정 완료")
+    print("수정된", _target, "의 자산: ", ws.cell(_row, c_money).value)
+    
     saveFile()
 
 def _reset():
