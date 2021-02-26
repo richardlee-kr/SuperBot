@@ -162,4 +162,3 @@ async def on_command_error(ctx, error):
         await ctx.send("명령어를 찾지 못했습니다. !도움을 입력하여 명령어를 확인하세요.")
 
 bot.run(token)
-

@@ -17,6 +17,7 @@ def saveFile():
     wb.save("userDB.xlsx")
     wb.close()
 
+#=========================checking==================================
 def checkUserNum():
     print("user.py - checkUserNum")
     loadFile()
@@ -87,6 +88,7 @@ def checkUser(_name, _id):
 
     return False, None
 
+#=========================Money==================================
 def getMoney(_name,_row):
     print("user.py - getMoney")
     loadFile()
@@ -99,9 +101,36 @@ def getMoney(_name,_row):
     saveFile()
 
     return result
-        
-#======================================================================================
 
+def remit(sender, sender_row, receiver, receiver_row, _amount):
+    print("user.py - remit")
+    #loadFile()
+    
+    print("보내는 사람: ", sender)
+    print("받는 사람: ", receiver)
+    print("보내는 돈: ", _amount)
+    print("")
+
+    modifyMoney(receiver, receiver_row, _amount)
+    modifyMoney(sender, sender_row, -int(_amount))
+
+    print("")
+
+def modifyMoney(_target, _row, _amount):
+    print("user.py - modifyMoney")
+    loadFile()
+
+    print(_target, "의 자산데이터 수정")
+    print(_target, "의 자산: " + str(ws.cell(_row, c_money).value))
+    print("추가할 액수: ", _amount)
+    ws.cell(_row, c_money).value += int(_amount)
+
+    print("자산데이터 수정 완료")
+    print("수정된", _target, "의 자산: ", ws.cell(_row, c_money).value)
+    
+    saveFile()
+
+#=========================Account==================================
 def Signup(_name, _id):
     print("user.py - signup")
 
@@ -148,46 +177,8 @@ def userInfo(_row):
 
     return ws.cell(_row,c_money).value, ws.cell(_row,c_lvl).value
 
-def remit(sender, sender_row, receiver, receiver_row, _amount):
-    print("user.py - remit")
-    #loadFile()
-    
-    print("보내는 사람: ", sender)
-    print("받는 사람: ", receiver)
-    print("보내는 돈: ", _amount)
-    print("")
 
-    modifyMoney(receiver, receiver_row, _amount)
-    modifyMoney(sender, sender_row, -int(_amount))
-
-    #print(receiver, "의 자산:" + str(ws.cell(receiver_row, c_money).value))
-    #print(sender, "의 자산:" + str(ws.cell(sender_row, c_money).value))
-    #print("")
-    
-    #ws.cell(receiver_row, c_money).value += int(_amount)
-    #ws.cell(sender_row, c_money).value -= int(_amount)
-
-    #print("자산 데이터 수정 완료")
-    #print(receiver, "의 자산: ", ws.cell(receiver_row, c_money).value)
-    #print(sender, "의 자산: ", ws.cell(sender_row, c_money).value)
-    #print("")
-
-    #saveFile()
-
-def modifyMoney(_target, _row, _amount):
-    print("user.py - modifyMoney")
-    loadFile()
-
-    print(_target, "의 자산데이터 수정")
-    print(_target, "의 자산:" + str(ws.cell(_row, c_money).value))
-    print("추가할 액수: ", _amount)
-    ws.cell(_row, c_money).value += int(_amount)
-
-    print("자산데이터 수정 완료")
-    print("수정된", _target, "의 자산: ", ws.cell(_row, c_money).value)
-    
-    saveFile()
-
+#=========================For Test==================================
 def _reset():
     loadFile()
 
