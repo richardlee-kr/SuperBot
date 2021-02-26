@@ -1,6 +1,6 @@
 import asyncio, discord, time 
 from ydl import *
-from dice import *
+from game import *
 from user import *
 from discord.ext import commands
 
