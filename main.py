@@ -162,11 +162,13 @@ async def 정보(ctx, user: discord.User):
         print("------------------------------\n")
         await ctx.send(user.name  + " 은(는) 등록되지 않은 사용자입니다.")
     else:
-        money, level = userInfo(userRow)
+        level, money, loss = userInfo(userRow)
         print("------------------------------\n")
         embed = discord.Embed(title="유저 정보", description = user.name, color = 0x62D0F6)
         embed.add_field(name = "레벨", value = level)
         embed.add_field(name = "보유 자산", value = money)
+        embed.add_field(name = "도박으로 날린 돈", value = loss, inline = False)
+
         await ctx.send(embed=embed)
 
 @bot.command()
