@@ -21,11 +21,11 @@ async def 도움(ctx):
     embed = discord.Embed(title = "Super Bot", description = "만능 봇이 될 예정", color = 0x6E17E3) 
     embed.add_field(name = bot.command_prefix + "도움", value = "도움말을 봅니다", inline = False)
     embed.add_field(name = bot.command_prefix + "주사위", value = "주사위를 굴려 봇과 대결합니다", inline = False)
-    embed.add_field(name = bot.command_prefix + "회원가입", value = "각종 컨텐츠를 즐기기 위한 회원가입을합니다", inline = False)
+    embed.add_field(name = bot.command_prefix + "회원가입", value = "각종 컨텐츠를 즐기기 위한 회원가입을 합니다", inline = False)
     embed.add_field(name = bot.command_prefix + "내정보", value = "자신의 정보를 확인합니다", inline = False)
     embed.add_field(name = bot.command_prefix + "정보 [대상]", value = "멘션한 [대상]의 정보를 확인합니다", inline = False)
-    embed.add_field(name = bot.command_prefix + "송금 [대상] [돈]", value = "멘션한 [대상]에게 돈을 보냅니다", inline = False)
-    embed.add_field(name = bot.command_prefix + "홀짝 [예상] [돈]", value = "홀짝게임에 [돈]을 겁니다. [예상]과 일치하면 1.5배의 수익, [돈]을 올인하면 2배의 수익을 얻습니다.", inline = False)
+    embed.add_field(name = bot.command_prefix + "송금 [대상] [돈]", value = "멘션한 [대상]에게 [돈]을 보냅니다", inline = False)
+    embed.add_field(name = bot.command_prefix + "홀짝 [예상] [돈]", value = "홀짝게임에 [돈]을 겁니다. [예상]과 일치하면 1.5배의 수익을 얻습니다.", inline = False)
     embed.add_field(name = bot.command_prefix + "만든 놈 ", value = "[http://lektion-von-erfolglosigkeit.tistory.com/](<http://lektion-von-erfolglosigkeit.tistory.com/>)", inline = False)
     await ctx.send(embed=embed)
 
@@ -48,59 +48,49 @@ async def 홀짝(ctx, face, money):
     _color = 0x000000
     if userExistance:
         print("DB에서 ", ctx.author.name, "을 찾았습니다.")
-        if face == "홀" or face == "짝":
-            #print("매개변수 홀짝 확인")
-            if forecast == face:
-                result = "성공"
-                _color = 0x00ff56
-                print(result)
+        cur_money = getMoney(ctx.author.name, userRow)
+        if int(money) >= 10:
+            if cur_money >= int(money):
+                if face == "홀" or face == "짝":
+                    if forecast == face:
+                        result = "성공"
+                        _color = 0x00ff56
+                        print(result)
 
-                if money == "올인":
-                    #print("올인함")
-                    betting = getMoney(ctx.author.name, userRow)
-                    print("배팅금액: ", betting)
-                    print("")
+                        betting = int(money)
+                        print("배팅금액: ", betting)
+                        print("")
 
-                    modifyMoney(ctx.author.name, userRow, betting)
+                        modifyMoney(ctx.author.name, userRow, 0.5*betting)
+                    else:
+                        result = "실패"
+                        _color = 0xFF0000
+                        print(result)
+
+                        betting = int(money)
+                        print("배팅금액: ", betting)
+                        print("")
+
+                        modifyMoney(ctx.author.name, userRow, -int(betting))
+                        addLoss(ctx.author.name, userRow, int(betting))
+
+                    embed = discord.Embed(title = "홀짝게임 결과", description = result, color = _color)
+                    embed.add_field(name = "배팅금액", value = betting, inline = False)
+                    embed.add_field(name = "현재 자산", value = getMoney(ctx.author.name, userRow), inline = False)
+
+                    await ctx.send(embed=embed)
+
                 else:
-                    #print("올인 안함")
-                    betting = int(money)
-                    print("배팅금액: ", betting)
-                    print("")
-
-                    modifyMoney(ctx.author.name, userRow, 0.5*betting)
+                    print("잘못된 매개변수: ", face)
+                    await ctx.send("홀 또는 짝을 입력하세요")
             else:
-                #print("실패함")
-                result = "실패"
-                _color = 0xFF0000
-                print(result)
-
-                if money == "올인":
-                    #print("올인함")
-                    betting = getMoney(ctx.author.name, userRow)
-                    print("배팅금액: ", betting)
-                    print("")
-                else:
-                    betting = int(money)
-                    print("배팅금액: ", betting)
-                    print("")
-
-                modifyMoney(ctx.author.name, userRow, -int(betting))
-                addLoss(ctx.author.name, userRow, int(betting))
-
-            #print("결과 도출")
-            embed = discord.Embed(title = "홀짝게임 결과", description = result, color = _color)
-            #print("embed 추가")
-            embed.add_field(name = "배팅금액", value = betting, inline = False)
-            #print("배팅 금액 추가")
-            embed.add_field(name = "현재 자산", value = getMoney(ctx.author.name, userRow), inline = False)
-            #print("현재 자산 추가")
-
-            await ctx.send(embed=embed)
-
+                print("돈이 부족합니다.")
+                #cur_money = getMoney(ctx.author.name, userRow)
+                print("배팅금액: ", money, " | 현재자산: ", cur_money)
+                await ctx.send("돈이 부족합니다. 현재자산: " + str(cur_money))
         else:
-            print("잘못된 매개변수: ", face)
-            await ctx.send("홀 또는 짝을 입력하세요")
+            print("배팅금액", money, "가 10보다 작습니다.")
+            await ctx.send("10원 이상만 배팅 가능합니다.")
     else:
         print("DB에서 ", ctx.author.name, "을 찾을 수 없습니다")
         await ctx.send("홀짝게임은 회원가입 후 이용 가능합니다.")
