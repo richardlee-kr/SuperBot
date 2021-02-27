@@ -1,5 +1,5 @@
 #custom file ignorance
-*.xlsx
+userDB.xlsx
 token.txt
 z_main.py
 
