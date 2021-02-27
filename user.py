@@ -4,6 +4,7 @@ c_name = 1
 c_id = 2
 c_money = 3
 c_lvl = 4
+c_loss = 5
 
 default_money = 10000
 
@@ -111,7 +112,7 @@ def remit(sender, sender_row, receiver, receiver_row, _amount):
     print("보내는 돈: ", _amount)
     print("")
 
-    modifyMoney(receiver, receiver_row, _amount)
+    modifyMoney(receiver, receiver_row, int(_amount))
     modifyMoney(sender, sender_row, -int(_amount))
 
     print("")
@@ -123,11 +124,25 @@ def modifyMoney(_target, _row, _amount):
     print(_target, "의 자산데이터 수정")
     print(_target, "의 자산: " + str(ws.cell(_row, c_money).value))
     print("추가할 액수: ", _amount)
-    ws.cell(_row, c_money).value += int(_amount)
+    ws.cell(_row, c_money).value += _amount
 
     print("자산데이터 수정 완료")
     print("수정된", _target, "의 자산: ", ws.cell(_row, c_money).value)
     
+    saveFile()
+
+def addLoss(_target, _row, _amount):
+    print("user.py - addLoss")
+    loadFile()
+
+    print(_target, "의 잃은 돈 추가")
+    print(_target, "의 잃은돈: " + str(ws.cell(_row, c_loss).value))
+    print("추가할 액수: ", _amount)
+    ws.cell(_row, c_loss).value += _amount
+
+    print("잃은 돈 추가 완료")
+    print(_target, "의 총 잃은 돈: ", ws.cell(_row, c_loss).value)
+
     saveFile()
 
 #=========================Account==================================
@@ -150,6 +165,7 @@ def Signup(_name, _id):
     print("기본 자금 지급 | ", ws.cell(_row,c_money).value)
     ws.cell(row=_row, column=c_lvl, value = 1)
     print("초기 레벨 설정 | lvl:", ws.cell(_row,c_lvl).value)
+    ws.cell(row=_row, column=c_loss, value = 0)
     print("")
 
     saveFile()
@@ -171,11 +187,17 @@ def DeleteAccount(_row):
 def userInfo(_row):
     loadFile()
 
-    print("보유자산: ", ws.cell(_row,c_money).value, "레벨: ", ws.cell(_row,c_lvl).value)
+    _lvl = ws.cell(_row,c_lvl).value
+    _money = ws.cell(_row,c_money).value
+    _loss = ws.cell(_row,c_loss).value
+
+    print("레벨: ", _lvl)
+    print("보유자산: ", _money)
+    print("잃은 돈: ", _loss)
 
     saveFile()
 
-    return ws.cell(_row,c_money).value, ws.cell(_row,c_lvl).value
+    return _lvl, _money, _loss
 
 
 #=========================For Test==================================
@@ -189,3 +211,9 @@ def _reset():
 
     print("데이터 삭제 완료")
 
+def addMoney(_row, _amount):
+    loadFile()
+
+    ws.cell(_row, c_money).value += _amount
+
+    saveFile()
