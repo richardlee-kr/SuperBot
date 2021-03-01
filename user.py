@@ -2,9 +2,10 @@ from openpyxl import load_workbook, Workbook
 
 c_name = 1
 c_id = 2
-c_money = 3
-c_lvl = 4
-c_loss = 5
+c_lvl = 3
+c_exp = 4
+c_money = 5
+c_loss = 6
 
 default_money = 10000
 
@@ -144,7 +145,40 @@ def addLoss(_target, _row, _amount):
     print(_target, "의 총 잃은 돈: ", ws.cell(_row, c_loss).value)
 
     saveFile()
+#=========================Level==================================
+def levelupCheck(_row):
+    print("user.py - levelupCheck")
+    loadFile()
 
+    name = ws.cell(_row, c_name).value
+    exp = ws.cell(_row, c_exp).value
+    lvl = ws.cell(_row, c_lvl).value
+    amount_to_up = lvl*lvl + 6*lvl
+
+    print(name,"의 레벨업 조사")
+    print(name, "의 현재 레벨: ", lvl, "(", exp, "/", amount_to_up,")")
+
+    if exp >= amount_to_up:
+        print("충분한 경험치양을 확인")
+        ws.cell(_row, c_lvl).value += 1
+        print("레벨 데이터 수정")
+        ws.cell(_row, c_exp).value -= amount_to_up
+        print("경험치 초기화")
+        return True, lvl+1
+    else:
+        return False, lvl
+
+def modifyExp(_row, _amount):
+    print("user.py - modifyExp")
+    loadFile()
+
+    name = ws.cell(_row, c_name).value
+    print(name, "의 경험치 획득량: ", _amount)
+
+    ws.cell(_row, c_exp).value += _amount
+    print(name, "현재 경험치: ", ws.cell(_row, c_exp).value)
+
+    saveFile()
 #=========================Account==================================
 def Signup(_name, _id):
     print("user.py - signup")
@@ -161,11 +195,17 @@ def Signup(_name, _id):
     print("이름 추가 | ",  ws.cell(_row,c_name).value)
     ws.cell(row=_row, column=c_id, value =hex(_id))
     print("고유번호 추가 | ", ws.cell(_row,c_id).value)
-    ws.cell(row=_row, column=c_money, value = default_money)
-    print("기본 자금 지급 | ", ws.cell(_row,c_money).value)
+
     ws.cell(row=_row, column=c_lvl, value = 1)
     print("초기 레벨 설정 | lvl:", ws.cell(_row,c_lvl).value)
+    ws.cell(row=_row, column=c_exp, value = 0)
+    print("초기 경험치 설정 | exp:", ws.cell(_row,c_exp).value)
+
+    ws.cell(row=_row, column=c_money, value = default_money)
+    print("기본 자금 지급 | ", ws.cell(_row,c_money).value)
     ws.cell(row=_row, column=c_loss, value = 0)
+    print("초기 손실 설정 | loss:", ws.cell(_row,c_loss).value)
+
     print("")
 
     saveFile()
@@ -188,16 +228,18 @@ def userInfo(_row):
     loadFile()
 
     _lvl = ws.cell(_row,c_lvl).value
+    _exp = ws.cell(_row,c_exp).value
     _money = ws.cell(_row,c_money).value
     _loss = ws.cell(_row,c_loss).value
 
     print("레벨: ", _lvl)
+    print("경험치: ", _exp)
     print("보유자산: ", _money)
     print("잃은 돈: ", _loss)
 
     saveFile()
 
-    return _lvl, _money, _loss
+    return _lvl, _exp, _money, _loss
 
 
 #=========================For Test==================================
@@ -217,3 +259,18 @@ def addMoney(_row, _amount):
     ws.cell(_row, c_money).value += _amount
 
     saveFile()
+
+def addExp(_row, _amount):
+    loadFile()
+
+    ws.cell(_row, c_exp).value += _amount
+
+    saveFile()
+
+def adjustlvl(_row, _amount):
+    loadFile()
+    
+    ws.cell(_row, c_lvl).value = _amount
+    ws.cell(_row, c_exp).value = 0
+
+    saveFile

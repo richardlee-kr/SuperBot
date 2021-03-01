@@ -7,7 +7,6 @@ from discord.ext import commands
 bot = commands.Bot(command_prefix="!")
 token = open("token.txt", "r").readline()
 
-
 @bot.event
 async def on_ready():
     print("I have logged in as {0.user}\n".format(bot))
@@ -159,11 +158,12 @@ async def 내정보(ctx):
         print("------------------------------\n")
         await ctx.send("회원가입 후 자신의 정보를 확인할 수 있습니다.")
     else:
-        level, money, loss = userInfo(userRow)
+        level, exp, money, loss = userInfo(userRow)
         print("------------------------------\n")
         embed = discord.Embed(title="유저 정보", description = ctx.author.name, color = 0x62D0F6)
         embed.add_field(name = "레벨", value = level)
-        embed.add_field(name = "보유 자산", value = money)
+        embed.add_field(name = "경험치", value = str(exp) + "/" + str(level*level + 6*level))
+        embed.add_field(name = "보유 자산", value = money, inline = False)
         embed.add_field(name = "도박으로 날린 돈", value = loss, inline = False)
 
         await ctx.send(embed=embed)
@@ -177,11 +177,12 @@ async def 정보(ctx, user: discord.User):
         print("------------------------------\n")
         await ctx.send(user.name  + " 은(는) 등록되지 않은 사용자입니다.")
     else:
-        level, money, loss = userInfo(userRow)
+        level, exp, money, loss = userInfo(userRow)
         print("------------------------------\n")
         embed = discord.Embed(title="유저 정보", description = user.name, color = 0x62D0F6)
         embed.add_field(name = "레벨", value = level)
-        embed.add_field(name = "보유 자산", value = money)
+        embed.add_field(name = "경험치", value = exp + "/" + level*level + 6*level)
+        embed.add_field(name = "보유 자산", value = money, inline = False)
         embed.add_field(name = "도박으로 날린 돈", value = loss, inline = False)
 
         await ctx.send(embed=embed)
@@ -239,7 +240,39 @@ async def reset(ctx):
 async def add(ctx, money):
     user, row = checkUser(ctx.author.name, ctx.author.id)
     addMoney(row, int(money))
-    print("ch")
+    print("money")
+
+@bot.command()
+async def exp(ctx, exp):
+    user, row = checkUser(ctx.author.name, ctx.author.id)
+    addExp(row, int(exp))
+    print("exp")
+
+@bot.command()
+async def lvl(ctx, lvl):
+    user, row = checkUser(ctx.author.name, ctx.author.id)
+    adjustlvl(row, int(lvl))
+    print("lvl")
+
+@bot.event
+async def on_message(message):
+    if message.author == bot.user:
+        return
+    userExistance, userRow = checkUser(message.author.name, message.author.id)
+    channel = message.channel
+    if userExistance:
+        levelUp, lvl = levelupCheck(userRow)
+        if levelUp:
+            print(message.author, "가 레벨업 했습니다")
+            print("")
+            embed = discord.Embed(title = "레벨업", description = None, color = 0x00A260)
+            embed.set_footer(text = message.author.name + "이 " + str(lvl) + "레벨 달성!")
+            await channel.send(embed=embed)
+        else:
+            modifyExp(userRow, 1)
+            print("------------------------------\n")
+
+    await bot.process_commands(message)
 
 @bot.event
 async def on_command_error(ctx, error):
@@ -247,3 +280,4 @@ async def on_command_error(ctx, error):
         await ctx.send("명령어를 찾지 못했습니다. !도움을 입력하여 명령어를 확인하세요.")
 
 bot.run(token)
+
