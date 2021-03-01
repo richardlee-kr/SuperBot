@@ -154,17 +154,25 @@ def levelupCheck(_row):
     exp = ws.cell(_row, c_exp).value
     lvl = ws.cell(_row, c_lvl).value
     amount_to_up = lvl*lvl + 6*lvl
+    count = 0
 
     print(name,"의 레벨업 조사")
     print(name, "의 현재 레벨: ", lvl, "(", exp, "/", amount_to_up,")")
 
     if exp >= amount_to_up:
-        print("충분한 경험치양을 확인")
-        ws.cell(_row, c_lvl).value += 1
-        print("레벨 데이터 수정")
-        ws.cell(_row, c_exp).value -= amount_to_up
-        print("경험치 초기화")
-        return True, lvl+1
+        while(exp >= amount_to_up):
+            amount_to_up = lvl*lvl + 6*lvl
+            exp = ws.cell(_row, c_exp).value
+            print("레벨업에 필요한 경험치 :", amount_to_up)
+            print("현재 경험치: ", exp)
+
+            print("충분한 경험치양을 확인")
+            ws.cell(_row, c_lvl).value += 1
+            count += 1
+            print("레벨 데이터 수정")
+            ws.cell(_row, c_exp).value -= amount_to_up
+            print("경험치 초기화")
+        return True, lvl+count
     else:
         return False, lvl
 
@@ -243,7 +251,7 @@ def userInfo(_row):
 
 
 #=========================For Test==================================
-def _reset():
+def resetData():
     loadFile()
 
     print("유저 데이터를 삭제")

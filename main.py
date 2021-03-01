@@ -234,7 +234,7 @@ async def 송금(ctx, user: discord.User, money):
 
 @bot.command()
 async def reset(ctx):
-    _reset()
+    resetData()
 
 @bot.command()
 async def add(ctx, money):
@@ -258,21 +258,25 @@ async def lvl(ctx, lvl):
 async def on_message(message):
     if message.author == bot.user:
         return
-    userExistance, userRow = checkUser(message.author.name, message.author.id)
-    channel = message.channel
-    if userExistance:
-        levelUp, lvl = levelupCheck(userRow)
-        if levelUp:
-            print(message.author, "가 레벨업 했습니다")
-            print("")
-            embed = discord.Embed(title = "레벨업", description = None, color = 0x00A260)
-            embed.set_footer(text = message.author.name + "이 " + str(lvl) + "레벨 달성!")
-            await channel.send(embed=embed)
-        else:
-            modifyExp(userRow, 1)
-            print("------------------------------\n")
+    if message.content == "!reset":
+        await bot.process_commands(message)
+        return
+    else:
+        userExistance, userRow = checkUser(message.author.name, message.author.id)
+        channel = message.channel
+        if userExistance:
+            levelUp, lvl = levelupCheck(userRow)
+            if levelUp:
+                print(message.author, "가 레벨업 했습니다")
+                print("")
+                embed = discord.Embed(title = "레벨업", description = None, color = 0x00A260)
+                embed.set_footer(text = message.author.name + "이 " + str(lvl) + "레벨 달성!")
+                await channel.send(embed=embed)
+            else:
+                modifyExp(userRow, 1)
+                print("------------------------------\n")
 
-    await bot.process_commands(message)
+        await bot.process_commands(message)
 
 @bot.event
 async def on_command_error(ctx, error):
