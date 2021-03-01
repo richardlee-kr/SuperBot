@@ -113,9 +113,20 @@ async def 도박(ctx, money):
     print("------------------------------\n")
 
 @bot.command()
+async def 랭킹(ctx):
+    rank = ranking()
+    embed = discord.Embed(title = "레벨 랭킹", description = None, color = 0x4A44FF)
+
+    for i in range(0,len(rank)):
+        if i%2 == 0:
+            name = rank[i]
+            lvl = rank[i+1]
+            embed.add_field(name = str(int(i/2+1))+"위 "+name, value ="레벨: "+str(lvl), inline=False)
+
+    await ctx.send(embed=embed) 
+
+@bot.command()
 async def 회원가입(ctx):
-    #print(ctx.author.name)
-    #print(ctx.author.id)
     print("회원가입이 가능한지 확인합니다.")
     userExistance, userRow = checkUser(ctx.author.name, ctx.author.id)
     if userExistance:
@@ -147,7 +158,6 @@ async def 탈퇴(ctx):
         print("------------------------------\n")
 
         await ctx.send("등록되지 않은 사용자입니다.")
-        
 
 @bot.command()
 async def 내정보(ctx):
@@ -159,10 +169,13 @@ async def 내정보(ctx):
         await ctx.send("회원가입 후 자신의 정보를 확인할 수 있습니다.")
     else:
         level, exp, money, loss = userInfo(userRow)
+        rank = getRank(userRow)
+        userNum = checkUserNum()
         print("------------------------------\n")
         embed = discord.Embed(title="유저 정보", description = ctx.author.name, color = 0x62D0F6)
         embed.add_field(name = "레벨", value = level)
         embed.add_field(name = "경험치", value = str(exp) + "/" + str(level*level + 6*level))
+        embed.add_field(name = "순위", value = str(rank) + "/" + str(userNum))
         embed.add_field(name = "보유 자산", value = money, inline = False)
         embed.add_field(name = "도박으로 날린 돈", value = loss, inline = False)
 
@@ -178,10 +191,13 @@ async def 정보(ctx, user: discord.User):
         await ctx.send(user.name  + " 은(는) 등록되지 않은 사용자입니다.")
     else:
         level, exp, money, loss = userInfo(userRow)
+        rank = getRank(userRow)
+        userNum = chekcUserNum()
         print("------------------------------\n")
         embed = discord.Embed(title="유저 정보", description = user.name, color = 0x62D0F6)
         embed.add_field(name = "레벨", value = level)
-        embed.add_field(name = "경험치", value = exp + "/" + level*level + 6*level)
+        embed.add_field(name = "경험치", value = str(exp) + "/" + str(level*level + 6*level))
+        embed.add_field(name = "순위", value = str(rank) + "/" + str(userNum))
         embed.add_field(name = "보유 자산", value = money, inline = False)
         embed.add_field(name = "도박으로 날린 돈", value = loss, inline = False)
 

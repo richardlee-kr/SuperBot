@@ -160,9 +160,7 @@ def levelupCheck(_row):
     print(name, "의 현재 레벨: ", lvl, "(", exp, "/", amount_to_up,")")
 
     if exp >= amount_to_up:
-        while(exp >= amount_to_up):
-            amount_to_up = lvl*lvl + 6*lvl
-            exp = ws.cell(_row, c_exp).value
+        while(exp >= amount_to_up and exp >= 0):
             print("레벨업에 필요한 경험치 :", amount_to_up)
             print("현재 경험치: ", exp)
 
@@ -172,7 +170,11 @@ def levelupCheck(_row):
             print("레벨 데이터 수정")
             ws.cell(_row, c_exp).value -= amount_to_up
             print("경험치 초기화")
-        return True, lvl+count
+
+            lvl = ws.cell(_row, c_lvl).value
+            exp = ws.cell(_row, c_exp).value
+            amount_to_up = lvl*lvl + 6*lvl
+        return True, lvl
     else:
         return False, lvl
 
@@ -187,6 +189,47 @@ def modifyExp(_row, _amount):
     print(name, "현재 경험치: ", ws.cell(_row, c_exp).value)
 
     saveFile()
+#=========================Ranking==================================
+def ranking():
+    print("user.py - ranking")
+
+    loadFile()
+
+    userRanking =  {}
+    userNum = checkUserNum()
+
+    print("등록된 유저수: ", userNum)
+    print("")
+
+    print("랭킹 집계중")
+
+    for row in range(2, 2+userNum):
+        _name = ws.cell(row, c_name).value
+        _lvl = ws.cell(row, c_lvl).value
+        userRanking[_name] = _lvl
+
+    print("랭킹 집계 완료")
+    a = sorted(userRanking.items(), reverse=True, key=lambda item:item[1])
+    result = []
+    for items in a:
+        result.append(items[0])
+        result.append(items[1])
+    print(result)
+    print("")
+
+    return result
+
+def getRank(_row):
+    print("user.py - getRank")
+    user = ws.cell(_row, c_name).value
+    print(user, "의 랭킹 조사")
+    rank = ranking()
+
+    result = int(rank.index(user)/2)+1
+    print(user, "의 랭킹: ",result, "위")
+
+    return result
+
 #=========================Account==================================
 def Signup(_name, _id):
     print("user.py - signup")
