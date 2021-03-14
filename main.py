@@ -24,7 +24,7 @@ async def 도움(ctx):
     embed.add_field(name = bot.command_prefix + "내정보", value = "자신의 정보를 확인합니다", inline = False)
     embed.add_field(name = bot.command_prefix + "정보 [대상]", value = "멘션한 [대상]의 정보를 확인합니다", inline = False)
     embed.add_field(name = bot.command_prefix + "송금 [대상] [돈]", value = "멘션한 [대상]에게 [돈]을 보냅니다", inline = False)
-    embed.add_field(name = bot.command_prefix + "홀짝 [예상] [돈]", value = "홀짝게임에 [돈]을 겁니다. [예상]과 일치하면 1.5배의 수익을 얻습니다.", inline = False)
+    embed.add_field(name = bot.command_prefix + "도박 [돈]", value = "[돈]을 걸어 도박을 합니다. 올인도 가능합니다", inline = False)
     embed.add_field(name = bot.command_prefix + "만든 놈 ", value = "[http://lektion-von-erfolglosigkeit.tistory.com/](<http://lektion-von-erfolglosigkeit.tistory.com/>)", inline = False)
     await ctx.send(embed=embed)
 
@@ -171,11 +171,12 @@ async def 내정보(ctx):
         level, exp, money, loss = userInfo(userRow)
         rank = getRank(userRow)
         userNum = checkUserNum()
+        boxes = int(exp/(level*level + 6*level)*20)
         print("------------------------------\n")
         embed = discord.Embed(title="유저 정보", description = ctx.author.name, color = 0x62D0F6)
         embed.add_field(name = "레벨", value = level)
-        embed.add_field(name = "경험치", value = str(exp) + "/" + str(level*level + 6*level))
         embed.add_field(name = "순위", value = str(rank) + "/" + str(userNum))
+        embed.add_field(name = "XP: " + str(exp) + "/" + str(level*level + 6*level), value = boxes * ":blue_square:" + (20-boxes) * ":white_large_square:", inline = False)
         embed.add_field(name = "보유 자산", value = money, inline = False)
         embed.add_field(name = "도박으로 날린 돈", value = loss, inline = False)
 
