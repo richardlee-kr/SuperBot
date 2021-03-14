@@ -171,12 +171,13 @@ async def 내정보(ctx):
         level, exp, money, loss = userInfo(userRow)
         rank = getRank(userRow)
         userNum = checkUserNum()
-        boxes = int(exp/(level*level + 6*level)*20)
+        expToUP = level*level + 6*level
+        boxes = int(exp/expToUP*20)
         print("------------------------------\n")
         embed = discord.Embed(title="유저 정보", description = ctx.author.name, color = 0x62D0F6)
         embed.add_field(name = "레벨", value = level)
         embed.add_field(name = "순위", value = str(rank) + "/" + str(userNum))
-        embed.add_field(name = "XP: " + str(exp) + "/" + str(level*level + 6*level), value = boxes * ":blue_square:" + (20-boxes) * ":white_large_square:", inline = False)
+        embed.add_field(name = "XP: " + str(exp) + "/" + str(expToUP), value = boxes * ":blue_square:" + (20-boxes) * ":white_large_square:", inline = False)
         embed.add_field(name = "보유 자산", value = money, inline = False)
         embed.add_field(name = "도박으로 날린 돈", value = loss, inline = False)
 
