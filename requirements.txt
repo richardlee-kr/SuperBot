@@ -1,4 +1,4 @@
 discord.py
 asyncio
 openpyxl
-ydl
+youtube_dl
