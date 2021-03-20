@@ -1,0 +1,6 @@
+discord.py
+asyncio
+random
+openpyxl
+ydl
+time
